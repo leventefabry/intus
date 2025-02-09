@@ -114,6 +114,13 @@ function App() {
 
   return (
     <div className="center-screen">
+      <div className="instructions">
+        <h1>Rectangle Resizer</h1>
+        <h3>Instructions</h3>
+        <p>Move or resize the rectangle below.</p>
+        <p>The width can't exceed the height. In this case, the rectangle won't be saved.</p>
+      </div>
+
       {loading ?
         <p>...loading</p> : (
           <>

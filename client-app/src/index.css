@@ -1,3 +1,9 @@
+p,
+h1,
+h3 {
+    margin: 0;
+}
+
 .prevent-select {
     -webkit-user-select: none;
     /* Safari */

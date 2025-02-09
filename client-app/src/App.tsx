@@ -4,10 +4,12 @@ import RectangleObject from './UI/Rectangle';
 import Position from './models/Position';
 import Rectangle from './models/Rectangle';
 import { Corners } from './models/Corners';
-import { fetchRectangle } from './api/RectangleClient';
+import { fetchRectangle, saveRectangle } from './api/RectangleClient';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
+  const [saving, setSaving] = useState<boolean>(false);
+  const [savingMessage, setSavingMessage] = useState<string | null>(null);
   const [rect, setRect] = useState<Rectangle>({ width: 50, height: 100, x: 100, y: 100 });
   const [rectStartPos, setRectStartPos] = useState<Position | null>(null);
   const [resizingCorner, setResizingCorner] = useState<Corners | null>(null);
@@ -17,10 +19,11 @@ function App() {
       try {
         const response = await fetchRectangle();
         setRect(response);
-      } catch (err) {
+      } catch (err: any) {
         console.log(err);
       } finally {
         setLoading(false);
+        setSavingMessage("The rectangle has been loaded")
       }
     };
 
@@ -28,12 +31,16 @@ function App() {
   }, []);
 
   const handleRectangleMove = (e: React.PointerEvent<SVGRectElement>, corner: Corners | null) => {
+    if (saving) {
+      return;
+    }
+
     setRectStartPos({ x: e.clientX, y: e.clientY });
     setResizingCorner(corner);
   };
 
   const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
-    if (rectStartPos === null) {
+    if (rectStartPos === null || saving) {
       return;
     }
 
@@ -91,30 +98,48 @@ function App() {
   const handlePointerUp = () => {
     setRectStartPos(null);
     setResizingCorner(null);
+
+    setSaving(true);
+    setSavingMessage("Saving is in progress...");
+    saveRectangle(rect)
+      .then(() => {
+        setSavingMessage("The rectangle has been saved");
+        setSaving(false);
+      })
+      .catch((err: any) => {
+        setSavingMessage(`Error: ${err.response?.data?.title} ${err.response?.data?.detail}`);
+        setSaving(false);
+      })
   };
 
   return (
     <div className="center-screen">
       {loading ?
         <p>...loading</p> : (
-          <svg width={500} height={500} className="border" onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} >
-            <text
-              className={"prevent-select"}
-              x={rect.x}
-              y={rect.y - 5}
-              fontSize={12}>
-              width: {rect.width}, height: {rect.height}, pericular: {2 * (rect.height + rect.width)}
-            </text>
-            <RectangleObject
-              width={rect.width}
-              height={rect.height}
-              x={rect.x}
-              y={rect.y}
-              handleRectangleMove={handleRectangleMove} />
-          </svg>)}
-
+          <>
+            {savingMessage && <div className="saving-message">{savingMessage}</div>}
+            <div className="svg-container">
+              <svg width={500} height={500} className="border" onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} >
+                <text
+                  className={"prevent-select"}
+                  x={rect.x}
+                  y={rect.y - 5}
+                  fontSize={12}>
+                  width: {rect.width}, height: {rect.height}, perimeter: {2 * (rect.height + rect.width)}
+                </text>
+                <RectangleObject
+                  width={rect.width}
+                  height={rect.height}
+                  x={rect.x}
+                  y={rect.y}
+                  saving={saving}
+                  handleRectangleMove={handleRectangleMove} />
+              </svg>
+            </div>
+          </>
+        )}
     </div>
   )
 }
 
-export default App
+export default App;

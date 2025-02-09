@@ -14,6 +14,8 @@ builder.Services.AddCors(options => options.AddPolicy("ClientPolicy", conf =>
 }));
 
 builder.Services.AddTransient<IRectangleFileService, RectangleFileService>();
+builder.Services.AddTransient<IRectangleService, RectangleService>();
+
 
 var app = builder.Build();
 

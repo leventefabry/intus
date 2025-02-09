@@ -3,3 +3,19 @@
   border-width: 1px;
   border-color: rgb(209 213 219);
 }
+
+.saving-message {
+  margin-bottom: 10px;
+  /* Space between message and SVG */
+  padding: 8px 15px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 5px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.svg-container {
+  display: flex;
+  justify-content: center;
+}

@@ -13,3 +13,13 @@ export const fetchRectangle = async (): Promise<Rectangle> => {
 
     return response.data;
 };
+
+export const saveRectangle = async (rectangle: Rectangle): Promise<boolean> => {
+    const response = await client({
+        method: "POST",
+        url: "/api/rectangle",
+        data: rectangle,
+    });
+
+    return response.data;
+};

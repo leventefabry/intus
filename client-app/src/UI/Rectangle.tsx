@@ -6,10 +6,12 @@ interface Props {
     height: number;
     x: number;
     y: number;
+    saving: boolean;
     handleRectangleMove(e: React.PointerEvent<SVGRectElement>, corner: Corners | null): void;
 }
 
 function RectangleObject(props: Props) {
+    const rectangleClasses = props.saving ? "pointer-disabled disabled-rectangle" : "drag-cursor rectangle"
     return (
         <>
             <rect
@@ -18,32 +20,35 @@ function RectangleObject(props: Props) {
                 width={props.width}
                 height={props.height}
                 fill="blue"
-                className="drag-cursor rectangle"
+                className={rectangleClasses}
                 onPointerDown={(e) => props.handleRectangleMove(e, null)} />
 
-            {(Object.keys(Corners) as Array<keyof typeof Corners>).map((corner) => {
-                const size = 6;
-                let cx = props.x - size / 2;
-                let cy = props.y - size / 2;
+            {props.saving ? null : <>
+                {(Object.keys(Corners) as Array<keyof typeof Corners>).map((corner) => {
+                    const size = 6;
+                    let cx = props.x - size / 2;
+                    let cy = props.y - size / 2;
 
-                if (Corners[corner] === Corners.TopRight || Corners[corner] === Corners.BottomRight) {
-                    cx = cx + props.width;
-                }
+                    if (Corners[corner] === Corners.TopRight || Corners[corner] === Corners.BottomRight) {
+                        cx = cx + props.width;
+                    }
 
-                if (Corners[corner] === Corners.BottomLeft || Corners[corner] === Corners.BottomRight) {
-                    cy = cy + props.height;
-                }
+                    if (Corners[corner] === Corners.BottomLeft || Corners[corner] === Corners.BottomRight) {
+                        cy = cy + props.height;
+                    }
 
-                return (<rect
-                    key={corner}
-                    x={cx}
-                    y={cy}
-                    width={size}
-                    height={size}
-                    fill="transparent"
-                    className="pointer-cursor corner"
-                    onPointerDown={(e) => props.handleRectangleMove(e, Corners[corner])} />)
-            })}
+                    return (<rect
+                        key={corner}
+                        x={cx}
+                        y={cy}
+                        width={size}
+                        height={size}
+                        fill="transparent"
+                        className="pointer-cursor corner"
+                        onPointerDown={(e) => props.handleRectangleMove(e, Corners[corner])} />)
+                })}
+            </>}
+
         </>
     )
 

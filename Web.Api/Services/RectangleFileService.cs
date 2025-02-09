@@ -5,7 +5,7 @@ namespace Web.Api.Services;
 
 public class RectangleFileService(ILogger<RectangleFileService> logger) : IRectangleFileService
 {
-    public async Task<Rectangle?> LoadRectangleFileAsync(string filename, CancellationToken token = default)
+    public async Task<Rectangle?> LoadRectangleFromFileAsync(string filename, CancellationToken token = default)
     {
         try
         {
@@ -16,21 +16,39 @@ public class RectangleFileService(ILogger<RectangleFileService> logger) : IRecta
         catch (FileNotFoundException e)
         {
             logger.LogError(e, "File was not found");
-            return null;
+            throw;
         }
         catch (ArgumentNullException e)
         {
             logger.LogError(e, "The JSON value is null");
-            return null;
+            throw;
         }
         catch (JsonException e)
         {
             logger.LogError(e, "The JSON value could not be converted to Web.Api.Models.Rectangle");
-            return null;
+            throw;
         }
         catch (Exception e)
         {
             logger.LogError(e, "Failed to load rectangle file");
+            throw;
+        }
+    }
+
+    public async Task SaveRectangleToFileAsync(string filename, Rectangle rectangle, CancellationToken token = default)
+    {
+        try
+        {
+            await File.WriteAllTextAsync(filename, JsonSerializer.Serialize(rectangle), token);
+        }
+        catch (FileNotFoundException e)
+        {
+            logger.LogError(e, "File was not found");
+            throw;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to save rectangle file");
             throw;
         }
     }

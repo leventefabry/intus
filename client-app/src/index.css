@@ -15,10 +15,14 @@
     cursor: pointer;
 }
 
+.pointer-disabled {
+    cursor: not-allowed;
+}
+
 .center-screen {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    text-align: center;
-    min-height: 100vh;
+    justify-content: center;
+    height: 100vh;
 }

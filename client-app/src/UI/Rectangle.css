@@ -5,3 +5,7 @@
 .rectangle:hover {
     opacity: 80%;
 }
+
+.disabled-rectangle {
+    opacity: 60%;
+}

@@ -23,7 +23,7 @@ function App() {
         console.log(err);
       } finally {
         setLoading(false);
-        setSavingMessage("The rectangle has been loaded")
+        setSavingMessage("The rectangle is loaded")
       }
     };
 
@@ -96,20 +96,22 @@ function App() {
   };
 
   const handlePointerUp = () => {
+    if (rectStartPos !== null) {
+      setSaving(true);
+      setSavingMessage("Saving is in progress...");
+      saveRectangle(rect)
+        .then(() => {
+          setSavingMessage("The rectangle is saved");
+          setSaving(false);
+        })
+        .catch((err: any) => {
+          setSavingMessage(`Error: ${err.response?.data?.title} ${err.response?.data?.detail}`);
+          setSaving(false);
+        })
+    }
+
     setRectStartPos(null);
     setResizingCorner(null);
-
-    setSaving(true);
-    setSavingMessage("Saving is in progress...");
-    saveRectangle(rect)
-      .then(() => {
-        setSavingMessage("The rectangle has been saved");
-        setSaving(false);
-      })
-      .catch((err: any) => {
-        setSavingMessage(`Error: ${err.response?.data?.title} ${err.response?.data?.detail}`);
-        setSaving(false);
-      })
   };
 
   return (

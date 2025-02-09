@@ -25,7 +25,7 @@ function App() {
     };
 
     getRectangle();
-  }, [fetchRectangle]);
+  }, []);
 
   const handleRectangleMove = (e: React.PointerEvent<SVGRectElement>, corner: Corners | null) => {
     setRectStartPos({ x: e.clientX, y: e.clientY });

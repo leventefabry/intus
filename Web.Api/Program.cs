@@ -1,3 +1,5 @@
+using Web.Api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,10 +8,12 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddControllers();
 
-builder.Services.AddCors(options => options.AddPolicy("LocalhostClientPolicy", conf =>
+builder.Services.AddCors(options => options.AddPolicy("ClientPolicy", conf =>
 {
     conf.WithOrigins("http://localhost:5173").AllowAnyMethod().AllowAnyHeader();
 }));
+
+builder.Services.AddTransient<IRectangleFileService, RectangleFileService>();
 
 var app = builder.Build();
 
@@ -23,6 +27,6 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
-app.UseCors("LocalhostClientPolicy");
+app.UseCors("ClientPolicy");
 
 app.Run();

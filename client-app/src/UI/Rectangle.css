@@ -1,0 +1,7 @@
+.corner:hover {
+    fill: rgb(134, 186, 255);
+}
+
+.rectangle:hover {
+    opacity: 80%;
+}

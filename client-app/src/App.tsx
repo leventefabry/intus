@@ -1,14 +1,31 @@
 import './App.css'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import RectangleObject from './UI/Rectangle';
 import Position from './models/Position';
 import Rectangle from './models/Rectangle';
 import { Corners } from './models/Corners';
+import { fetchRectangle } from './api/RectangleClient';
 
 function App() {
+  const [loading, setLoading] = useState<boolean>(true);
   const [rect, setRect] = useState<Rectangle>({ width: 50, height: 100, x: 100, y: 100 });
   const [rectStartPos, setRectStartPos] = useState<Position | null>(null);
   const [resizingCorner, setResizingCorner] = useState<Corners | null>(null);
+
+  useEffect(() => {
+    const getRectangle = async () => {
+      try {
+        const response = await fetchRectangle();
+        setRect(response);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getRectangle();
+  }, [fetchRectangle]);
 
   const handleRectangleMove = (e: React.PointerEvent<SVGRectElement>, corner: Corners | null) => {
     setRectStartPos({ x: e.clientX, y: e.clientY });
@@ -78,21 +95,24 @@ function App() {
 
   return (
     <div className="center-screen">
-      <svg width={500} height={500} className="border" onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} >
-        <text
-          className={"prevent-select"}
-          x={rect.x}
-          y={rect.y - 5}
-          fontSize={12}>
-          width: {rect.width}, height: {rect.height}, pericular: {2 * (rect.height + rect.width)}
-        </text>
-        <RectangleObject
-          width={rect.width}
-          height={rect.height}
-          x={rect.x}
-          y={rect.y}
-          handleRectangleMove={handleRectangleMove} />
-      </svg>
+      {loading ?
+        <p>...loading</p> : (
+          <svg width={500} height={500} className="border" onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} >
+            <text
+              className={"prevent-select"}
+              x={rect.x}
+              y={rect.y - 5}
+              fontSize={12}>
+              width: {rect.width}, height: {rect.height}, pericular: {2 * (rect.height + rect.width)}
+            </text>
+            <RectangleObject
+              width={rect.width}
+              height={rect.height}
+              x={rect.x}
+              y={rect.y}
+              handleRectangleMove={handleRectangleMove} />
+          </svg>)}
+
     </div>
   )
 }
